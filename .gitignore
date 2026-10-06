@@ -1,0 +1,41 @@
+﻿# === Node / Frontend =========================================================
+node_modules/
+dist/
+.vite/
+*.local
+
+# === Python / Backend =========================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+backend/__pycache__/
+backend/*.pyc
+*.egg-info/
+.eggs/
+venv/
+env/
+.venv/
+
+# === Environment Secrets ======================================================
+# NEVER commit real .env files — only .env.example files are safe to commit
+.env
+.env.local
+.env.production
+.env.staging
+backend/.env
+backend/.env.local
+backend/.env.production
+.vercel/
+
+# === OS / Editor ==============================================================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+
+# === Scratch / Temp ===========================================================
+scratch/
+*.log
