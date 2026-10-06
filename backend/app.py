@@ -1,4 +1,4 @@
-﻿import os
+import os
 import re
 import html
 import logging
@@ -10,7 +10,12 @@ import requests
 from dotenv import load_dotenv
 
 # Load local environment variables from .env
-load_dotenv()
+_env_dir = os.path.dirname(os.path.abspath(__file__))
+_env_file = os.path.join(_env_dir, ".env")
+if os.path.exists(_env_file):
+    load_dotenv(_env_file)
+else:
+    load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("portfolio-backend")
