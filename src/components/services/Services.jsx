@@ -15,7 +15,7 @@ const SERVICES_DATA = [
     num: '01',
     title: 'WEB DEVELOPMENT',
     label: 'Full-Stack Engineering',
-    tagline: 'High-performance web apps built with modern React, Next.js & robust architectures.',
+    tagline: 'High-performance web applications built with Python, Flask, React, and clean architecture.',
     image: '/images/services/web-development.webp',
     isLight: true,
   },
@@ -31,8 +31,8 @@ const SERVICES_DATA = [
   {
     id: 'ats-resumes',
     num: '03',
-    title: 'ATS-FRIENDLY RESUMES',
-    label: 'Executive Career Products',
+    title: 'ATS-FRIENDLY RESUME MAKING',
+    label: 'Career Transition Documents',
     tagline: 'Cleanly structured, machine-parseable resumes engineered to pass recruiter algorithms.',
     image: '/images/services/ats-resumes.webp',
     isLight: false,
@@ -58,7 +58,7 @@ const SERVICES_DATA = [
   {
     id: 'admin-panels',
     num: '06',
-    title: 'BUSINESS ADMIN PANELS',
+    title: 'ADMIN PANELS FOR BUSINESS WEBSITES',
     label: 'Enterprise Control Dashboards',
     tagline: 'Secure operational portals with live analytics, data tables, and management controls.',
     image: '/images/services/admin-panels.webp',
@@ -424,7 +424,7 @@ export function Services() {
         {/* Editorial Section Header */}
         <div className="services-section-header" ref={headerRef}>
           <div className="services-meta-kicker">
-            <span className="kicker-label">CAPABILITIES</span>
+            <span className="kicker-label">WHAT I CAN BUILD</span>
           </div>
 
           <h2 className="services-title-wrap" aria-label="What I Build.">
@@ -439,7 +439,7 @@ export function Services() {
           </h2>
 
           <p className="services-section-intro">
-            Digital products, websites and systems built for real-world use.
+            Practical digital products, web applications, and solutions available for freelance collaboration.
           </p>
         </div>
 

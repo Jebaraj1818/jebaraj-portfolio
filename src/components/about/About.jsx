@@ -12,12 +12,11 @@ export function About() {
   const titleRef = useRef(null)
   const posterRef = useRef(null)
 
-  // Moment refs for sequential scrub timeline
+  // Moment refs for 4 sequential scrub story stages
   const moment1Ref = useRef(null)
   const moment2Ref = useRef(null)
   const moment3Ref = useRef(null)
   const moment4Ref = useRef(null)
-  const moment5Ref = useRef(null)
 
   const lenis = useLenis()
 
@@ -40,9 +39,8 @@ export function About() {
     const m2 = moment2Ref.current
     const m3 = moment3Ref.current
     const m4 = moment4Ref.current
-    const m5 = moment5Ref.current
 
-    if (!section || !track || !header || !title || !poster || !m1 || !m2 || !m3 || !m4 || !m5) return
+    if (!section || !track || !header || !title || !poster || !m1 || !m2 || !m3 || !m4) return
 
     const mm = gsap.matchMedia()
 
@@ -120,11 +118,11 @@ export function About() {
         const { isDesktop } = context.conditions
 
         // Clear any stale transforms from previous mounts / HMR
-        gsap.set([m1, m2, m3, m4, m5], { clearProps: 'transform' })
+        gsap.set([m1, m2, m3, m4], { clearProps: 'transform' })
 
         if (isDesktop) {
           // ─────────────────────────────────────────────────────────
-          // DESKTOP: 100% UNCHANGED EXISTING IMPLEMENTATION
+          // DESKTOP: 4 CALIBRATED MOMENTS ACROSS 0..100 SCRUB
           // ─────────────────────────────────────────────────────────
           const startRotateX = 20
           const startScale = 1.05
@@ -133,7 +131,7 @@ export function About() {
 
           // Strict initial states: Only Moment 1 is visible in center; all others placed below masked viewport
           gsap.set(m1, { autoAlpha: 1, yPercent: 0, y: 0 })
-          gsap.set([m2, m3, m4, m5], { autoAlpha: 0, yPercent: 125, y: 0 })
+          gsap.set([m2, m3, m4], { autoAlpha: 0, yPercent: 125, y: 0 })
 
           const masterTl = gsap.timeline({
             scrollTrigger: {
@@ -179,10 +177,8 @@ export function About() {
           )
 
           // C. Physical Upward Typography Flow Through Masked Viewport
-          // Each moment holds clearly readable, drifts upward with scroll,
-          // and fully travels upward behind the top mask before the next moment enters from below.
 
-          // ── MOMENT 1: IDENTITY (Hold 0 -> 16, Upward Exit 16 -> 24)
+          // ── MOMENT 1: BUSINESS FIRST. TECHNOLOGY NEXT. (Hold 0 -> 20, Upward Exit 20 -> 28)
           masterTl
             .to(
               m1,
@@ -190,7 +186,7 @@ export function About() {
                 yPercent: -6,
                 y: 0,
                 ease: 'none',
-                duration: 16,
+                duration: 20,
               },
               0
             )
@@ -203,10 +199,10 @@ export function About() {
                 ease: 'power1.in',
                 duration: 8,
               },
-              16
+              20
             )
 
-          // ── MOMENT 2: PHILOSOPHY (Enters 28 -> 35, Holds 35 -> 46, Upward Exit 46 -> 53)
+          // ── MOMENT 2: FROM IDEAS TO WORKING PRODUCTS (Enters 28 -> 36, Holds 36 -> 54, Upward Exit 54 -> 62)
           masterTl
             .fromTo(
               m2,
@@ -216,7 +212,7 @@ export function About() {
                 yPercent: 0,
                 y: 0,
                 ease: 'power2.out',
-                duration: 7,
+                duration: 8,
               },
               28
             )
@@ -226,9 +222,9 @@ export function About() {
                 yPercent: -6,
                 y: 0,
                 ease: 'none',
-                duration: 11,
+                duration: 18,
               },
-              35
+              36
             )
             .to(
               m2,
@@ -237,12 +233,12 @@ export function About() {
                 y: 0,
                 autoAlpha: 0,
                 ease: 'power1.in',
-                duration: 7,
+                duration: 8,
               },
-              46
+              54
             )
 
-          // ── MOMENT 3: 3 PILLARS (Enters 57 -> 64, Holds 64 -> 74, Upward Exit 74 -> 81)
+          // ── MOMENT 3: PYTHON. FULL-STACK. DATA. AI. (Enters 62 -> 70, Holds 70 -> 84, Upward Exit 84 -> 92)
           masterTl
             .fromTo(
               m3,
@@ -252,9 +248,9 @@ export function About() {
                 yPercent: 0,
                 y: 0,
                 ease: 'power2.out',
-                duration: 7,
+                duration: 8,
               },
-              57
+              62
             )
             .to(
               m3,
@@ -262,9 +258,9 @@ export function About() {
                 yPercent: -6,
                 y: 0,
                 ease: 'none',
-                duration: 10,
+                duration: 14,
               },
-              64
+              70
             )
             .to(
               m3,
@@ -273,64 +269,27 @@ export function About() {
                 y: 0,
                 autoAlpha: 0,
                 ease: 'power1.in',
-                duration: 7,
+                duration: 8,
               },
-              74
+              84
             )
 
-          // ── MOMENT 4: WHAT I BUILD (Enters 85 -> 90, Holds 90 -> 94.5, Upward Exit 94.5 -> 97.2)
-          masterTl
-            .fromTo(
-              m4,
-              { autoAlpha: 0, yPercent: 125, y: 0 },
-              {
-                autoAlpha: 1,
-                yPercent: 0,
-                y: 0,
-                ease: 'power2.out',
-                duration: 5,
-              },
-              85
-            )
-            .to(
-              m4,
-              {
-                yPercent: -5,
-                y: 0,
-                ease: 'none',
-                duration: 4.5,
-              },
-              90
-            )
-            .to(
-              m4,
-              {
-                yPercent: -125,
-                y: 0,
-                autoAlpha: 0,
-                ease: 'power1.in',
-                duration: 2.7,
-              },
-              94.5
-            )
-
-          // ── MOMENT 5: FREELANCE DIRECTION (Enters 98 -> 99.2, Holds Settled 99.2 -> 100)
+          // ── MOMENT 4: BUILDING TOWARD SOMETHING BIGGER (Enters 92 -> 96, Holds Settled 96 -> 100)
           masterTl.fromTo(
-            m5,
+            m4,
             { autoAlpha: 0, yPercent: 120, y: 0 },
             {
               autoAlpha: 1,
               yPercent: 0,
               y: 0,
               ease: 'power2.out',
-              duration: 1.2,
+              duration: 4,
             },
-            98
+            92
           )
         } else {
           // ─────────────────────────────────────────────────────────
-          // MOBILE: COMPLETE FULL-RANGE STORY PROGRESSION
-          // 5 discrete moments mapped evenly across full scroll range
+          // MOBILE: 4 DISCRETE STORY MOMENTS ACROSS FULL SCROLL RANGE
           // ─────────────────────────────────────────────────────────
           const startRotateX = 12
           const startScale = 1.02
@@ -339,7 +298,7 @@ export function About() {
 
           // Strict initial states: Only Moment 1 is visible in center; all others placed below masked viewport
           gsap.set(m1, { autoAlpha: 1, yPercent: 0, y: 0 })
-          gsap.set([m2, m3, m4, m5], { autoAlpha: 0, yPercent: 100, y: 0 })
+          gsap.set([m2, m3, m4], { autoAlpha: 0, yPercent: 100, y: 0 })
 
           const masterTl = gsap.timeline({
             scrollTrigger: {
@@ -348,7 +307,7 @@ export function About() {
               end: 'bottom bottom',
               scrub: true,
               snap: {
-                snapTo: [0, 0.25, 0.5, 0.75, 1],
+                snapTo: [0, 0.333, 0.667, 1],
                 directional: false,
                 duration: { min: 0.2, max: 0.45 },
                 delay: 0.05,
@@ -391,19 +350,9 @@ export function About() {
             2
           )
 
-          // C. Calibrated Discrete Story Moments
-          // 5 discrete slides with symmetrical holding plateaus centered at snap points:
-          // Slide 1: 0..8 (snap 0.00)
-          // Transition 1 -> 2: 8..17
-          // Slide 2: 17..33 (snap 0.25)
-          // Transition 2 -> 3: 33..42
-          // Slide 3: 42..58 (snap 0.50)
-          // Transition 3 -> 4: 58..67
-          // Slide 4: 67..83 (snap 0.75)
-          // Transition 4 -> 5: 83..92
-          // Slide 5: 92..100 (snap 1.00)
+          // C. Calibrated Discrete Story Moments (4 discrete slides centered at snap points: 0, 0.333, 0.667, 1)
 
-          // ── TRANSITION 1 -> 2 (Hold Slide 1: 0..8 | Transition: 8..17 | Settle Slide 2: 17..33)
+          // ── TRANSITION 1 -> 2 (Hold Slide 1: 0..12 | Transition: 12..24 | Settle Slide 2: 24..45)
           masterTl
             .to(
               m1,
@@ -411,9 +360,9 @@ export function About() {
                 yPercent: -100,
                 autoAlpha: 0,
                 ease: 'power2.inOut',
-                duration: 9,
+                duration: 12,
               },
-              8
+              12
             )
             .fromTo(
               m2,
@@ -423,13 +372,13 @@ export function About() {
                 yPercent: 0,
                 y: 0,
                 ease: 'power2.inOut',
-                duration: 9,
+                duration: 12,
                 immediateRender: false,
               },
-              8
+              12
             )
 
-          // ── TRANSITION 2 -> 3 (Hold Slide 2: 17..33 | Transition: 33..42 | Settle Slide 3: 42..58)
+          // ── TRANSITION 2 -> 3 (Hold Slide 2: 24..45 | Transition: 45..57 | Settle Slide 3: 57..78)
           masterTl
             .to(
               m2,
@@ -437,9 +386,9 @@ export function About() {
                 yPercent: -100,
                 autoAlpha: 0,
                 ease: 'power2.inOut',
-                duration: 9,
+                duration: 12,
               },
-              33
+              45
             )
             .fromTo(
               m3,
@@ -449,13 +398,13 @@ export function About() {
                 yPercent: 0,
                 y: 0,
                 ease: 'power2.inOut',
-                duration: 9,
+                duration: 12,
                 immediateRender: false,
               },
-              33
+              45
             )
 
-          // ── TRANSITION 3 -> 4 (Hold Slide 3: 42..58 | Transition: 58..67 | Settle Slide 4: 67..83)
+          // ── TRANSITION 3 -> 4 (Hold Slide 3: 57..78 | Transition: 78..90 | Settle Slide 4: 90..100)
           masterTl
             .to(
               m3,
@@ -463,9 +412,9 @@ export function About() {
                 yPercent: -100,
                 autoAlpha: 0,
                 ease: 'power2.inOut',
-                duration: 9,
+                duration: 12,
               },
-              58
+              78
             )
             .fromTo(
               m4,
@@ -475,36 +424,10 @@ export function About() {
                 yPercent: 0,
                 y: 0,
                 ease: 'power2.inOut',
-                duration: 9,
+                duration: 12,
                 immediateRender: false,
               },
-              58
-            )
-
-          // ── TRANSITION 4 -> 5 (Hold Slide 4: 67..83 | Transition: 83..92 | Settle Slide 5: 92..100)
-          masterTl
-            .to(
-              m4,
-              {
-                yPercent: -100,
-                autoAlpha: 0,
-                ease: 'power2.inOut',
-                duration: 9,
-              },
-              83
-            )
-            .fromTo(
-              m5,
-              { autoAlpha: 0, yPercent: 100, y: 0 },
-              {
-                autoAlpha: 1,
-                yPercent: 0,
-                y: 0,
-                ease: 'power2.inOut',
-                duration: 9,
-                immediateRender: false,
-              },
-              83
+              78
             )
         }
       }
@@ -538,7 +461,7 @@ export function About() {
               </div>
               <div className="title-mask-line title-mask-sub">
                 <span className="about-sub-label">
-                  FREELANCE DEVELOPER &amp; DIGITAL EXPERIENCE DESIGNER
+                  EMERGING SOFTWARE DEVELOPER
                 </span>
               </div>
             </h2>
@@ -563,91 +486,84 @@ export function About() {
                 </div>
               </div>
 
-              {/* Story Stage: Houses all 5 continuous visual narrative moments */}
+              {/* Story Stage: Houses all 4 continuous visual narrative moments */}
               <div className="poster-story-stage">
                 
-                {/* ── MOMENT 01: IDENTITY & INTRO ─────────────── */}
+                {/* ── SLIDE 01: BUSINESS FIRST. TECHNOLOGY NEXT. ─────────────── */}
                 <div className="story-moment moment-identity" ref={moment1Ref}>
-                  <div className="moment-kicker">IDENTITY</div>
+                  <div className="moment-kicker">FOUNDATION</div>
                   <h3 className="moment-lead-statement">
-                    "I work independently as a freelance developer and <span className="text-accent-crimson">digital experience designer</span>."
+                    "BUSINESS FIRST. <span className="text-accent-crimson">TECHNOLOGY NEXT</span>."
                   </h3>
                   <p className="moment-sub-lead">
-                    Based in <strong className="text-accent-warm">Tirunelveli, Tamil Nadu, India</strong> — partnering directly with ambitious founders, studios, and product teams across the globe to craft high-impact digital work.
+                    I'm a <strong className="text-accent-warm">BBA student</strong> who became increasingly interested in how technology can solve real business problems.
                   </p>
                   <div className="moment-rule" />
                   <div className="moment-meta-row">
-                    <span className="meta-tag">FOUNDATION: DESIGN + CODE</span>
+                    <span className="meta-tag">BUSINESS EDUCATION</span>
                     <span className="meta-bullet">•</span>
-                    <span className="meta-tag">INDEPENDENT CRAFT</span>
+                    <span className="meta-tag">TECHNOLOGY THINKING</span>
+                    <span className="meta-bullet">•</span>
+                    <span className="meta-tag">PRACTICAL APPLICATIONS</span>
                   </div>
                 </div>
 
-                {/* ── MOMENT 02: CRAFT PHILOSOPHY ─────────────── */}
+                {/* ── SLIDE 02: FROM IDEAS TO WORKING PRODUCTS ─────────────── */}
                 <div className="story-moment moment-philosophy" ref={moment2Ref}>
-                  <div className="moment-kicker">CRAFT PHILOSOPHY</div>
+                  <div className="moment-kicker">APPLICATIONS</div>
                   <h3 className="moment-lead-statement">
-                    "<span className="text-accent-offwhite">Design and development</span> sit together in my <span className="text-accent-crimson">craft</span>."
+                    FROM IDEAS TO <span className="text-accent-crimson">WORKING PRODUCTS</span>.
                   </h3>
                   <p className="moment-body-editorial">
-                    I don't separate interface aesthetics from engineering logic. Thoughtful visual direction, <span className="text-accent-cyan">fluid motion</span>, and rock-solid architecture work as one coherent medium from the very first line of code.
+                    I enjoy turning practical problems into applications — from e-commerce platforms to analytics dashboards and AI-powered tools.
                   </p>
                   <div className="moment-rule" />
                   <div className="moment-meta-row">
-                    <span className="meta-tag">PRECISION TYPOGRAPHY</span>
+                    <span className="meta-tag">DODDLE BAGS</span>
                     <span className="meta-bullet">•</span>
-                    <span className="meta-tag">PERFORMANCE FIRST</span>
+                    <span className="meta-tag">SMART BUSINESS INTELLIGENCE</span>
                     <span className="meta-bullet">•</span>
-                    <span className="meta-tag">CLEAN ARCHITECTURE</span>
+                    <span className="meta-tag">THE TRANSIT STORY</span>
                   </div>
                 </div>
 
-                {/* ── MOMENT 03: OVERSIZED TYPOGRAPHIC KEYWORDS ── */}
+                {/* ── SLIDE 03: PYTHON. FULL-STACK. DATA. AI. ── */}
                 <div className="story-moment moment-keywords" ref={moment3Ref}>
-                  <div className="moment-kicker">CORE DISCIPLINES</div>
+                  <div className="moment-kicker">PRIMARY TECHNICAL FOCUS</div>
                   <div className="moment-oversized-keywords">
-                    <div className="keyword-row">DESIGN<span className="keyword-accent">.</span></div>
-                    <div className="keyword-row">DEVELOPMENT<span className="keyword-accent">.</span></div>
-                    <div className="keyword-row keyword-highlight">DIGITAL EXPERIENCES<span className="keyword-accent">.</span></div>
+                    <div className="keyword-row">PYTHON<span className="keyword-accent">.</span></div>
+                    <div className="keyword-row">FULL-STACK<span className="keyword-accent">.</span></div>
+                    <div className="keyword-row keyword-highlight">DATA &amp; AI<span className="keyword-accent">.</span></div>
                   </div>
                   <p className="moment-body-editorial keywords-support">
-                    Bespoke digital systems crafted with intention — eliminating bloated templates and generic layouts in favor of <span className="text-accent-warm">fluid performance</span> and custom craft.
+                    My current focus is building a strong foundation in <span className="text-accent-warm">Python, Flask, React, JavaScript, SQL, Bootstrap, Data Analytics and Generative AI</span>.
                   </p>
                 </div>
 
-                {/* ── MOMENT 04: WHAT I BUILD / WEB FOCUS ─────── */}
-                <div className="story-moment moment-direction" ref={moment4Ref}>
-                  <div className="moment-kicker">WEB FOCUS</div>
-                  <h3 className="moment-headline-massive">
-                    I BUILD FOR THE <span className="text-accent-crimson">WEB</span><span className="title-accent">.</span>
-                  </h3>
-                  <p className="moment-body-editorial large-lead">
-                    From responsive brand websites and interactive portfolios to bespoke <span className="text-accent-offwhite">full-stack applications</span> and custom digital platforms — engineered for <span className="text-accent-cyan">speed</span>, utility, and lasting impact.
-                  </p>
-                  <div className="moment-rule" />
-                  <div className="moment-meta-row">
-                    <span className="meta-tag">FRONTEND FLUIDITY</span>
-                    <span className="meta-bullet">•</span>
-                    <span className="meta-tag">FULL-STACK SYSTEMS</span>
-                    <span className="meta-bullet">•</span>
-                    <span className="meta-tag">CUSTOM DIGITAL BUILDS</span>
-                  </div>
-                </div>
-
-                {/* ── MOMENT 05: FREELANCE AVAILABILITY & DIRECT CONTACT */}
-                <div className="story-moment moment-freelance" ref={moment5Ref}>
+                {/* ── SLIDE 04: BUILDING TOWARD SOMETHING BIGGER ── */}
+                <div className="story-moment moment-freelance" ref={moment4Ref}>
                   <div className="freelance-live-badge">
                     <span className="live-badge-dot" />
-                    <span className="live-badge-txt">STATUS: OPEN FOR SELECT CLIENT COMMISSIONS</span>
+                    <span className="live-badge-txt">CAREER VISION</span>
                   </div>
 
                   <h3 className="moment-freelance-title">
-                    AVAILABLE FOR <span className="text-accent-crimson">FREELANCE WORK</span> &amp; DIRECT DIGITAL BUILDS.
+                    BUILDING TOWARD <span className="text-accent-crimson">SOMETHING BIGGER</span>.
                   </h3>
 
                   <p className="moment-body-editorial freelance-desc">
-                    Whether you have a flagship website to launch, an interactive product to build, or a custom web experience to bring to life — I work directly with you from discovery to deployment.
+                    My goal is to become a developer who understands both the business problem and the technology behind the solution.
                   </p>
+
+                  <p className="moment-sub-lead" style={{ marginBottom: '16px', fontSize: '14px' }}>
+                    Building scalable applications, exploring AI, and creating products that solve meaningful problems.
+                  </p>
+
+                  <div className="moment-meta-row" style={{ justifyContent: 'center', marginBottom: '22px' }}>
+                    <span className="meta-tag" style={{ color: 'var(--text)', fontWeight: '700', letterSpacing: '0.2em' }}>
+                      BUSINESS <span style={{ color: 'var(--crimson)' }}>×</span> TECHNOLOGY <span style={{ color: 'var(--crimson)' }}>×</span> AI
+                    </span>
+                  </div>
 
                   {/* Social / Portfolio Links */}
                   <div className="moment-action-row">
@@ -676,7 +592,7 @@ export function About() {
                       onClick={handleContactClick}
                       className="editorial-action-pill pill-primary"
                     >
-                      <span>Start a Project</span>
+                      <span>Work With Me</span>
                       <span className="pill-arrow-right" aria-hidden="true">→</span>
                     </a>
                   </div>

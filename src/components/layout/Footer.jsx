@@ -68,13 +68,12 @@ export function Footer() {
                 JEBARAJ<span className="brand-dot">.P</span>
               </span>
               <span className="footer-brand-role">
-                Freelance Developer & Digital Experience Designer
+                Emerging Software Developer
               </span>
             </div>
 
             <p className="footer-brand-bio">
-              Independent developer crafting thoughtful websites, digital experiences,
-              and custom web solutions for people building something meaningful.
+              Building practical software by combining business thinking, technology, and AI.
             </p>
 
             <div className="footer-contact-details">

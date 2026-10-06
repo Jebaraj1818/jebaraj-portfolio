@@ -20,9 +20,21 @@ export const VideoScrubber = forwardRef(function VideoScrubber(
 
     video.pause()
     video.muted = true
+    video.defaultMuted = true
+
+    // Ensure physical DOM attributes for iOS Safari inline playback policy
+    if (!video.hasAttribute('muted')) video.setAttribute('muted', '')
+    if (!video.hasAttribute('playsinline')) video.setAttribute('playsinline', '')
+    if (!video.hasAttribute('webkit-playsinline')) video.setAttribute('webkit-playsinline', '')
 
     const notifyReady = () => {
       video.pause()
+      // Prime the initial video frame for iOS Safari if still at 0
+      if (video.currentTime === 0) {
+        try {
+          video.currentTime = 0.001
+        } catch (e) {}
+      }
       if (onReady) {
         onReady({ duration: video.duration, video })
       }
@@ -32,6 +44,12 @@ export const VideoScrubber = forwardRef(function VideoScrubber(
       notifyReady()
     } else {
       video.addEventListener('loadedmetadata', notifyReady, { once: true })
+      // Ensure explicit load trigger if the browser has not started buffering
+      if (video.readyState === 0) {
+        try {
+          video.load()
+        } catch (e) {}
+      }
     }
 
     // Prevent any independent playback attempts

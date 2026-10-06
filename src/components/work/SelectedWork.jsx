@@ -15,15 +15,15 @@ const PROJECTS = [
   {
     id: 'datamind-ai',
     num: '01',
-    title: 'DataMind AI',
-    descriptor: 'Universal Data Intelligence Platform',
-    category: 'AI · Data Analytics · Full Stack',
+    title: 'Smart Business Intelligence',
+    descriptor: 'Dynamic Analytics Dashboard',
+    category: 'React · Flask · AI Querying',
     domain: 'datamind-ai-gamma.vercel.app',
     liveUrl: 'https://datamind-ai-gamma.vercel.app/',
     heroImage: '/projects/datamind/hero.png',
-    keyTech: ['React · Vite', 'Python · Flask', 'Gemini AI', 'Pandas · NumPy'],
+    keyTech: ['React · Vite', 'Python · Flask', 'Gemini AI', 'Data Analytics'],
     shortDesc:
-      'Automated data intelligence and profiling platform built with React, Vite, and Python/Flask. Ingests CSV datasets to generate statistical profiles, data-quality diagnostics, and intelligent chart recommendations, augmented by Google Gemini AI.',
+      'Dynamic analytics dashboard built with React, Flask, and AI-powered data querying. Ingests CSV datasets to generate statistical profiles, data-quality diagnostics, and intelligent chart recommendations.',
     additionalImages: [
       {
         url: '/projects/datamind/features.png',
@@ -35,15 +35,15 @@ const PROJECTS = [
       },
     ],
     overview:
-      'DataMind AI is an automated data intelligence and profiling platform built with a React and Vite frontend and a Python/Flask analytical backend. It ingests dataset-agnostic CSV files to automatically generate comprehensive statistical profiles, evaluate data quality, and recommend optimal visualizations, augmented by an AI dataset assistant powered by the Google Gemini API.',
+      'Smart Business Intelligence is a dynamic analytics dashboard built with React, Flask, and AI-powered data querying. It processes tabular CSV datasets to generate statistical profiles, evaluates data quality, and recommends visualizations, with natural-language dataset querying powered by Google Gemini.',
     capabilities: [
-      'Automatic data profiling and statistical distribution summary for arbitrary CSV datasets',
-      'Data-quality analysis: missing-value detection, type inference, and outlier analysis',
-      'Intelligent visualization engine with automatic chart type recommendations',
-      'AI Dataset Assistant powered by Google Gemini API for natural-language dataset queries',
-      'Correlation matrices, trend analysis, and categorical segmentation',
-      'Automated executive PDF summary report generation with ReportLab',
-      'Dataset-agnostic architecture deployed on Vercel with REST backend architecture',
+      'Dynamic analytics dashboard for interactive tabular data exploration',
+      'Statistical distribution analysis and summary diagnostics with Pandas and NumPy',
+      'Data-quality evaluation: missing-value detection, type inference, and outliers',
+      'AI-powered natural language dataset queries via Google Gemini API integration',
+      'Correlation metrics, trend diagnostics, and categorical segmentation',
+      'Executive summary PDF report generation with ReportLab',
+      'Full-stack architecture deployed on Vercel with REST backend services',
     ],
     tech: [
       'Python',
@@ -53,14 +53,13 @@ const PROJECTS = [
       'Google Gemini API',
       'Pandas',
       'NumPy',
-      'Matplotlib',
       'ReportLab',
       'REST APIs',
       'Vercel',
       'Git',
     ],
     accent: '#ff334b',
-    visualTag: 'AI DATA PROFILING & GEMINI',
+    visualTag: 'REACT · FLASK · GEN AI',
   },
   {
     id: 'doddle-bags',
@@ -73,7 +72,7 @@ const PROJECTS = [
     heroImage: '/projects/doddle/hero.png',
     keyTech: ['Python · Flask', 'MySQL', 'Razorpay', 'JavaScript'],
     shortDesc:
-      'Full-stack e-commerce system built for handcrafted bags and carry gear. Features responsive product discovery, persistent wishlist and cart, user authentication, multi-step checkout, and real-time Razorpay payment gateway integration.',
+      'E-commerce platform built with Flask and MySQL. Features responsive product discovery, persistent cart and wishlist, user authentication, multi-step checkout, and real-time Razorpay payment gateway integration.',
     additionalImages: [
       {
         url: '/projects/doddle/products.png',
@@ -85,16 +84,16 @@ const PROJECTS = [
       },
     ],
     overview:
-      'Doddle Bags is a full-featured e-commerce platform engineered for handcrafted luxury bags and everyday carry gear. The system implements a complete customer shopping journey from responsive catalog discovery and wishlist management to multi-step checkout, real-time Razorpay payment integration, and administrative inventory management.',
+      'Doddle Bags is a full-stack e-commerce platform built with Flask and MySQL for handcrafted bags and carry gear. The system implements a complete customer shopping journey from responsive catalog discovery and wishlist management to checkout, real-time Razorpay payment integration, and administrative inventory oversight.',
     capabilities: [
-      'Responsive e-commerce interface with instant product browsing and category filtering',
+      'E-commerce platform built with Flask backend and MySQL relational database',
+      'Responsive product browsing and category filtering with persistent state',
       'Customer registration, authentication, session management, and password recovery',
       'Persistent wishlist and dynamic shopping cart with live total calculations',
-      'Multi-address delivery management and structured checkout funnel',
+      'Multi-step checkout flow with delivery address management',
       'Secure online payment processing via Razorpay payment gateway integration',
-      'Customer order management, order tracking, and automated confirmation notifications',
+      'Order tracking, receipt generation, and confirmation notifications',
       'Admin dashboard with role-based authorization for catalog and inventory oversight',
-      'Production security configurations, input sanitization, and SQL relational data modeling',
     ],
     tech: [
       'Python',
@@ -107,7 +106,7 @@ const PROJECTS = [
       'Vercel',
     ],
     accent: '#00e5ff',
-    visualTag: 'COMMERCE ARCHITECTURE & RAZORPAY',
+    visualTag: 'FLASK · MYSQL · RAZORPAY',
   },
   {
     id: 'transit-story',

@@ -7,45 +7,26 @@ import {
   SiPython,
   SiFlask,
   SiMysql,
-  SiGreensock,
+  SiBootstrap,
   SiGooglegemini,
-  SiGithub,
 } from 'react-icons/si'
+import { FiBarChart2 } from 'react-icons/fi'
 
 gsap.registerPlugin(ScrollTrigger)
 
 /**
- * EXACTLY 8 VERIFIED PRIMARY TECHNOLOGIES WITH AUTHENTIC LOGOS
- * Sourced directly from Jebaraj's GitHub profile (@Jebaraj1818),
- * live project production stacks (DataMind AI, Doddle Bags), and portfolio codebase.
+ * PRIMARY FOCUS TECHNOLOGIES (Interactive 8-node orbit)
+ * Sourced directly from current core capabilities & active projects.
  */
 const TECHNOLOGIES = [
-  {
-    id: 'react',
-    name: 'React',
-    shortName: 'React',
-    icon: SiReact,
-    brandColor: '#61DAFB',
-    category: 'FRONTEND',
-    detail: 'Component architecture, state synchronization, and reactive UI.',
-  },
-  {
-    id: 'javascript',
-    name: 'JavaScript',
-    shortName: 'JavaScript',
-    icon: SiJavascript,
-    brandColor: '#F7DF1E',
-    category: 'CORE LANGUAGE',
-    detail: 'Modern ES6+ syntax, asynchronous flows, and DOM choreography.',
-  },
   {
     id: 'python',
     name: 'Python',
     shortName: 'Python',
     icon: SiPython,
     brandColor: '#387EB8',
-    category: 'BACKEND / DATA',
-    detail: 'Data processing pipelines, analytical routines, and server logic.',
+    category: 'CORE LANGUAGE',
+    detail: 'Core programming language for backend services, data routines, and scripting automation.',
   },
   {
     id: 'flask',
@@ -53,44 +34,62 @@ const TECHNOLOGIES = [
     shortName: 'Flask',
     icon: SiFlask,
     brandColor: '#E8ECEF',
-    category: 'BACKEND',
-    detail: 'Lightweight REST API endpoints, routing, and microservices.',
+    category: 'BACKEND FRAMEWORK',
+    detail: 'Lightweight REST API endpoints, routing architecture, and backend application services.',
   },
   {
-    id: 'mysql',
-    name: 'MySQL',
-    shortName: 'MySQL',
+    id: 'react',
+    name: 'React',
+    shortName: 'React',
+    icon: SiReact,
+    brandColor: '#61DAFB',
+    category: 'FRONTEND UI',
+    detail: 'Component architecture, state synchronization, interactive dashboards, and reactive UI.',
+  },
+  {
+    id: 'javascript',
+    name: 'JavaScript',
+    shortName: 'JavaScript',
+    icon: SiJavascript,
+    brandColor: '#F7DF1E',
+    category: 'WEB CORE',
+    detail: 'Modern ES6+ syntax, asynchronous flows, browser APIs, and client-side logic.',
+  },
+  {
+    id: 'sql',
+    name: 'SQL',
+    shortName: 'SQL',
     icon: SiMysql,
     brandColor: '#00758F',
     category: 'DATABASE',
-    detail: 'Relational schema design, transactions, and data modeling.',
+    detail: 'Relational database schema design, transactions, data integrity, and structured queries.',
   },
   {
-    id: 'gsap',
-    name: 'GSAP',
-    shortName: 'GSAP',
-    icon: SiGreensock,
-    brandColor: '#88CE02',
-    category: 'MOTION',
-    detail: 'Scroll-linked timelines, physics-based motion, and cinematic reveals.',
+    id: 'bootstrap',
+    name: 'Bootstrap',
+    shortName: 'Bootstrap',
+    icon: SiBootstrap,
+    brandColor: '#7952B3',
+    category: 'CSS FRAMEWORK',
+    detail: 'Responsive grid systems, utility classes, structured layouts, and rapid UI prototyping.',
+  },
+  {
+    id: 'analytics',
+    name: 'Data Analytics',
+    shortName: 'Analytics',
+    icon: FiBarChart2,
+    brandColor: '#FF6B6B',
+    category: 'DATA & METRICS',
+    detail: 'Dataset profiling, quality diagnostics, trend analysis, and business intelligence metrics.',
   },
   {
     id: 'gemini-ai',
-    name: 'Google Gemini',
-    shortName: 'Gemini AI',
+    name: 'Generative AI',
+    shortName: 'Gen AI',
     icon: SiGooglegemini,
     brandColor: '#4E82EE',
-    category: 'INTELLIGENCE',
-    detail: 'LLM dataset profiling, intelligent diagnostics, and prompt pipelines.',
-  },
-  {
-    id: 'git-github',
-    name: 'Git / GitHub',
-    shortName: 'Git / GitHub',
-    icon: SiGithub,
-    brandColor: '#F05032',
-    category: 'TOOLING',
-    detail: 'Branch discipline, version control, and collaborative deployment.',
+    category: 'AI & LLM',
+    detail: 'LLM integration, AI-assisted querying, prompting workflows, and intelligent tools.',
   },
 ]
 
@@ -314,7 +313,7 @@ export function Skills() {
           </h2>
 
           <p className="tech-subtitle">
-            The core technical engine powering modern web experiences, backend architectures, and AI integrations.
+            Strengthening core foundations in Python, full-stack applications, SQL, data analytics, and generative AI.
           </p>
         </div>
 

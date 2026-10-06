@@ -928,8 +928,19 @@ body.mobile-nav-active .floating-actions {
   line-height: 1.5;
   color: var(--text-muted);
   max-width: 580px;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
   font-weight: 400;
+}
+
+.hero-substatement {
+  font-family: var(--mono);
+  font-size: clamp(12px, 1.05vw, 14px);
+  line-height: 1.55;
+  color: var(--text-faint);
+  max-width: 560px;
+  margin-top: 0;
+  margin-bottom: 30px;
+  letter-spacing: 0.02em;
 }
 
 /* Primary + Secondary CTAs */
@@ -1194,8 +1205,19 @@ body.mobile-nav-active .floating-actions {
   align-items: flex-start;
 }
 
-/* Moment 4: Center title card before portal climax */
+/* Moment 4: Lower-right offset */
 .moment-4 .moment-inner {
+  bottom: clamp(15%, 19vh, 25%);
+  right: clamp(36px, 8vw, 140px);
+  text-align: right;
+  align-items: flex-end;
+}
+.moment-4 .moment-meta {
+  justify-content: flex-end;
+}
+
+/* Moment 5: Center title card before portal climax */
+.moment-5 .moment-inner {
   top: clamp(18%, 22vh, 28%);
   left: 50%;
   transform: translateX(-50%);
@@ -1227,6 +1249,13 @@ body.mobile-nav-active .floating-actions {
   }
 
   .moment-4 .moment-inner {
+    bottom: clamp(75px, 12vh, 110px);
+    right: 24px;
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .moment-5 .moment-inner {
     top: clamp(110px, 16vh, 150px);
     left: 50%;
     transform: translateX(-50%);
@@ -1245,7 +1274,7 @@ body.mobile-nav-active .floating-actions {
     clip-path: none !important;
     letter-spacing: -0.04em !important;
   }
-  .moment-4 .moment-inner {
+  .moment-5 .moment-inner {
     transform: translateX(-50%) !important;
   }
 }
@@ -4837,7 +4866,8 @@ body.mobile-nav-active .floating-actions {
     margin-top: -100px;
   }
   .hero-brand-name { font-size: clamp(44px, 13vw, 76px); }
-  .hero-statement { font-size: 15px; margin-bottom: 24px; }
+  .hero-statement { font-size: 15px; margin-bottom: 8px; }
+  .hero-substatement { font-size: 12.5px; margin-bottom: 20px; }
   .hero-cta-group { gap: 12px; }
   .hero-btn { width: 100%; justify-content: center; padding: 14px 20px; }
 

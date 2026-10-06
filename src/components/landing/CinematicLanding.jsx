@@ -126,11 +126,7 @@ export function CinematicLanding() {
         if (!video.paused) {
           video.pause()
         }
-        if (typeof video.fastSeek === 'function') {
-          video.fastSeek(target)
-        } else {
-          video.currentTime = target
-        }
+        video.currentTime = target
       } catch (e) {
         isSeekingRef.current = false
       }
@@ -154,11 +150,7 @@ export function CinematicLanding() {
       isSeekingRef.current = true
       lastSeekTimeRef.current = performance.now()
       try {
-        if (typeof video.fastSeek === 'function') {
-          video.fastSeek(target)
-        } else {
-          video.currentTime = target
-        }
+        video.currentTime = target
       } catch (e) {
         isSeekingRef.current = false
       }
@@ -188,16 +180,16 @@ export function CinematicLanding() {
     if (video) video.pause()
     if (stRef.current) {
       const maxTime = Math.max(0, duration - 0.04)
-      const initialTime = clamp(stRef.current.progress, 0, 1) * maxTime
+      const initialTime = Math.max(0.001, clamp(stRef.current.progress, 0, 1) * maxTime)
       targetTimeRef.current = initialTime
       try {
         video.currentTime = initialTime
       } catch (e) {}
       ScrollTrigger.refresh()
     } else if (video) {
-      targetTimeRef.current = 0
+      targetTimeRef.current = 0.001
       try {
-        video.currentTime = 0
+        video.currentTime = 0.001
       } catch (e) {}
     }
   }, [])
@@ -258,7 +250,7 @@ export function CinematicLanding() {
       const video = videoRef.current
       if (video && video.readyState >= 1 && isFinite(video.duration) && video.duration > 0) {
         const maxTime = Math.max(0, video.duration - 0.04)
-        const initialTime = clamp(st.progress, 0, 1) * maxTime
+        const initialTime = Math.max(0.001, clamp(st.progress, 0, 1) * maxTime)
         targetTimeRef.current = initialTime
         try {
           video.currentTime = initialTime
@@ -302,9 +294,9 @@ export function CinematicLanding() {
       {/* ── Immediate Identity: Opening Film Credit ───────────── */}
       <div className="hero-brand-content">
         <div className="hero-credit-role">
-          <span>FREELANCE DEVELOPER</span>
+          <span>EMERGING SOFTWARE DEVELOPER</span>
           <span className="role-sep" aria-hidden="true">•</span>
-          <span>DIGITAL EXPERIENCE DESIGNER</span>
+          <span>AVAILABLE FOR FREELANCE</span>
         </div>
 
         <h1 className="hero-brand-name">
@@ -312,7 +304,11 @@ export function CinematicLanding() {
         </h1>
 
         <p className="hero-statement">
-          Building websites, digital products and interactive experiences.
+          Building practical software by combining business thinking, technology, and AI.
+        </p>
+
+        <p className="hero-substatement">
+          BBA student exploring Python, Full-Stack Development, Data Analytics and Generative AI.
         </p>
 
         <div className="hero-cta-group">
