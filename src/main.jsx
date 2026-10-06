@@ -7,6 +7,7 @@ import App from './App'
 import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger)
+ScrollTrigger.config({ ignoreMobileResize: true })
 if (typeof window !== 'undefined') {
   window.ScrollTrigger = ScrollTrigger
   window.gsap = gsap

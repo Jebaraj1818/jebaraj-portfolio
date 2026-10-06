@@ -339,7 +339,7 @@ export function About() {
 
           // Strict initial states: Only Moment 1 is visible in center; all others placed below masked viewport
           gsap.set(m1, { autoAlpha: 1, yPercent: 0, y: 0 })
-          gsap.set([m2, m3, m4, m5], { autoAlpha: 0, yPercent: 115, y: 0 })
+          gsap.set([m2, m3, m4, m5], { autoAlpha: 0, yPercent: 100, y: 0 })
 
           const masterTl = gsap.timeline({
             scrollTrigger: {
@@ -347,6 +347,13 @@ export function About() {
               start: 'top top',
               end: 'bottom bottom',
               scrub: true,
+              snap: {
+                snapTo: [0, 0.25, 0.5, 0.75, 1],
+                directional: false,
+                duration: { min: 0.2, max: 0.45 },
+                delay: 0.05,
+                ease: 'power2.out',
+              },
               invalidateOnRefresh: true,
             },
           })
@@ -371,7 +378,7 @@ export function About() {
             0
           )
 
-          // B. Title Header Gentle Recede & Fade (4 to 16)
+          // B. Title Header Gentle Recede & Fade (2 to 14)
           masterTl.to(
             header,
             {
@@ -381,166 +388,123 @@ export function About() {
               ease: 'power1.out',
               duration: 12,
             },
-            4
+            2
           )
 
-          // C. Discrete Story Moments (Seamless sequential flow, no center collision, no black voids)
+          // C. Calibrated Discrete Story Moments
+          // 5 discrete slides with symmetrical holding plateaus centered at snap points:
+          // Slide 1: 0..8 (snap 0.00)
+          // Transition 1 -> 2: 8..17
+          // Slide 2: 17..33 (snap 0.25)
+          // Transition 2 -> 3: 33..42
+          // Slide 3: 42..58 (snap 0.50)
+          // Transition 3 -> 4: 58..67
+          // Slide 4: 67..83 (snap 0.75)
+          // Transition 4 -> 5: 83..92
+          // Slide 5: 92..100 (snap 1.00)
 
-          // ── MOMENT 1: IDENTITY (0 to 20.5)
+          // ── TRANSITION 1 -> 2 (Hold Slide 1: 0..8 | Transition: 8..17 | Settle Slide 2: 17..33)
           masterTl
             .to(
               m1,
               {
-                yPercent: -5,
-                y: 0,
-                ease: 'none',
-                duration: 15,
-              },
-              0
-            )
-            .to(
-              m1,
-              {
-                yPercent: -110,
-                y: 0,
+                yPercent: -100,
                 autoAlpha: 0,
-                ease: 'power1.in',
-                duration: 5.5,
+                ease: 'power2.inOut',
+                duration: 9,
               },
-              15
+              8
             )
-
-          // ── MOMENT 2: PHILOSOPHY (19.5 to 40.5)
-          masterTl
             .fromTo(
               m2,
-              { autoAlpha: 0, yPercent: 110, y: 0 },
+              { autoAlpha: 0, yPercent: 100, y: 0 },
               {
                 autoAlpha: 1,
                 yPercent: 0,
                 y: 0,
-                ease: 'power2.out',
-                duration: 5,
+                ease: 'power2.inOut',
+                duration: 9,
+                immediateRender: false,
               },
-              19.5
-            )
-            .to(
-              m2,
-              {
-                yPercent: -5,
-                y: 0,
-                ease: 'none',
-                duration: 10.5,
-              },
-              24.5
-            )
-            .to(
-              m2,
-              {
-                yPercent: -110,
-                y: 0,
-                autoAlpha: 0,
-                ease: 'power1.in',
-                duration: 5.5,
-              },
-              35
+              8
             )
 
-          // ── MOMENT 3: CORE DISCIPLINES (39.5 to 60.5)
+          // ── TRANSITION 2 -> 3 (Hold Slide 2: 17..33 | Transition: 33..42 | Settle Slide 3: 42..58)
           masterTl
+            .to(
+              m2,
+              {
+                yPercent: -100,
+                autoAlpha: 0,
+                ease: 'power2.inOut',
+                duration: 9,
+              },
+              33
+            )
             .fromTo(
               m3,
-              { autoAlpha: 0, yPercent: 110, y: 0 },
+              { autoAlpha: 0, yPercent: 100, y: 0 },
               {
                 autoAlpha: 1,
                 yPercent: 0,
                 y: 0,
-                ease: 'power2.out',
-                duration: 5,
+                ease: 'power2.inOut',
+                duration: 9,
+                immediateRender: false,
               },
-              39.5
-            )
-            .to(
-              m3,
-              {
-                yPercent: -5,
-                y: 0,
-                ease: 'none',
-                duration: 10.5,
-              },
-              44.5
-            )
-            .to(
-              m3,
-              {
-                yPercent: -110,
-                y: 0,
-                autoAlpha: 0,
-                ease: 'power1.in',
-                duration: 5.5,
-              },
-              55
+              33
             )
 
-          // ── MOMENT 4: WEB FOCUS (59.5 to 80.5)
+          // ── TRANSITION 3 -> 4 (Hold Slide 3: 42..58 | Transition: 58..67 | Settle Slide 4: 67..83)
           masterTl
+            .to(
+              m3,
+              {
+                yPercent: -100,
+                autoAlpha: 0,
+                ease: 'power2.inOut',
+                duration: 9,
+              },
+              58
+            )
             .fromTo(
               m4,
-              { autoAlpha: 0, yPercent: 110, y: 0 },
+              { autoAlpha: 0, yPercent: 100, y: 0 },
               {
                 autoAlpha: 1,
                 yPercent: 0,
                 y: 0,
-                ease: 'power2.out',
-                duration: 5,
+                ease: 'power2.inOut',
+                duration: 9,
+                immediateRender: false,
               },
-              59.5
-            )
-            .to(
-              m4,
-              {
-                yPercent: -5,
-                y: 0,
-                ease: 'none',
-                duration: 10.5,
-              },
-              64.5
-            )
-            .to(
-              m4,
-              {
-                yPercent: -110,
-                y: 0,
-                autoAlpha: 0,
-                ease: 'power1.in',
-                duration: 5.5,
-              },
-              75
+              58
             )
 
-          // ── MOMENT 5: FREELANCE & ACTIONS (79.5 to 100)
+          // ── TRANSITION 4 -> 5 (Hold Slide 4: 67..83 | Transition: 83..92 | Settle Slide 5: 92..100)
           masterTl
+            .to(
+              m4,
+              {
+                yPercent: -100,
+                autoAlpha: 0,
+                ease: 'power2.inOut',
+                duration: 9,
+              },
+              83
+            )
             .fromTo(
               m5,
-              { autoAlpha: 0, yPercent: 110, y: 0 },
+              { autoAlpha: 0, yPercent: 100, y: 0 },
               {
                 autoAlpha: 1,
                 yPercent: 0,
                 y: 0,
-                ease: 'power2.out',
-                duration: 5,
+                ease: 'power2.inOut',
+                duration: 9,
+                immediateRender: false,
               },
-              79.5
-            )
-            .to(
-              m5,
-              {
-                yPercent: -2,
-                y: 0,
-                ease: 'none',
-                duration: 15.5,
-              },
-              84.5
+              83
             )
         }
       }

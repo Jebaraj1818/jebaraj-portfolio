@@ -4826,7 +4826,10 @@ body.mobile-nav-active .floating-actions {
   .nav-links { display: none; }
   .nav-mobile-toggle { display: flex; }
 
-  .landing { min-height: 580px; }
+  .landing {
+    height: 100dvh;
+    min-height: 0;
+  }
   .hero-brand-content {
     left: 20px;
     right: 20px;
@@ -4847,7 +4850,7 @@ body.mobile-nav-active .floating-actions {
      Vertical + Centered + 82vw Max 340px + Tight Composition
      ═══════════════════════════════════════════════════════════════ */
   .selected-work {
-    padding: 48px 0 42px;
+    padding: 36px 0 36px;
   }
 
   .selected-work-container {
@@ -5286,15 +5289,17 @@ body.mobile-nav-active .floating-actions {
 
   /* About Section Mobile Vertical Story */
   .about-scroll-track {
-    min-height: 440vh;
+    min-height: 280vh;
   }
-  /* Safe top spacing: navbar is ~64px; add 16px breathing room = 80px */
+  /* Safe top spacing: navbar is ~64px; add breathing room */
   .about-sticky-stage {
-    padding: 80px 16px 16px;
+    height: 100dvh;
+    padding: clamp(60px, 9vh, 76px) 16px 16px;
     perspective: 850px;
     justify-content: flex-start;
     align-items: center;
     overflow: hidden;
+    box-sizing: border-box;
   }
   .about-editorial-header {
     margin-bottom: 12px;
@@ -5312,9 +5317,6 @@ body.mobile-nav-active .floating-actions {
     letter-spacing: 0.09em;
   }
   /* Mobile portrait frame: 86vw, capped at 340px, centered horizontally */
-  .about-sticky-stage {
-    padding: 12px 16px;
-  }
   .about-poster-object {
     width: 86vw;
     max-width: 340px;

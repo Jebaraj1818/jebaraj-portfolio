@@ -159,13 +159,18 @@ export function CinematicLanding() {
     applyUIProgress(0, section)
 
     const ctx = gsap.context(() => {
+      const isMobile = isMobileViewport()
       const st = ScrollTrigger.create({
         trigger: section,
         start: 'top top',
-        end: `+=${SCROLL_VH * 100}%`,
+        end: isMobile
+          ? () => `+=${Math.round(window.innerHeight * SCROLL_VH)}`
+          : `+=${SCROLL_VH * 100}%`,
         pin: true,
         pinSpacing: true,
-        anticipatePin: 1,
+        anticipatePin: isMobile ? 0 : 1,
+        fastScrollEnd: true,
+        preventOverlaps: true,
         onUpdate(self) {
           const video = videoRef.current
           const dur = video?.duration
@@ -188,8 +193,12 @@ export function CinematicLanding() {
       }
     }, sectionRef)
 
+    let prevWidth = typeof window !== 'undefined' ? window.innerWidth : 0
     const handleResize = () => {
-      ScrollTrigger.refresh()
+      if (typeof window !== 'undefined' && window.innerWidth !== prevWidth) {
+        prevWidth = window.innerWidth
+        ScrollTrigger.refresh()
+      }
     }
     window.addEventListener('resize', handleResize)
 
