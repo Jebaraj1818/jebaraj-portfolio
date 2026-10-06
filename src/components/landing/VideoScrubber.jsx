@@ -7,7 +7,7 @@ import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
  * and notifies parent when metadata is loaded so ScrollTrigger can scrub frames accurately.
  */
 export const VideoScrubber = forwardRef(function VideoScrubber(
-  { src, fallbackSrc, onReady, className = '' },
+  { src, fallbackSrc, onReady, onSeeked, onSeeking, onError, className = '' },
   ref
 ) {
   const videoRef = useRef(null)
@@ -58,6 +58,9 @@ export const VideoScrubber = forwardRef(function VideoScrubber(
       aria-hidden="true"
       disablePictureInPicture
       disableRemotePlayback
+      onSeeked={onSeeked}
+      onSeeking={onSeeking}
+      onError={onError}
     >
       {fallbackSrc && <source src={fallbackSrc} />}
     </video>

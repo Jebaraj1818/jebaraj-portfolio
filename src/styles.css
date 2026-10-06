@@ -5293,7 +5293,8 @@ body.mobile-nav-active .floating-actions {
   }
   /* Safe top spacing: navbar is ~64px; add breathing room */
   .about-sticky-stage {
-    height: 100dvh;
+    height: auto;
+    min-height: auto;
     padding: clamp(60px, 9vh, 76px) 16px 16px;
     perspective: 850px;
     justify-content: flex-start;

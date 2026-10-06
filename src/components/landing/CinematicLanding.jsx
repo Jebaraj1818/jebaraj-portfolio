@@ -54,6 +54,8 @@ export function CinematicLanding() {
 
   // Single authoritative video-time controller
   const targetTimeRef = useRef(0)
+  const isSeekingRef = useRef(false)
+  const lastSeekTimeRef = useRef(0)
   const rafIdRef = useRef(null)
 
   /**
@@ -91,34 +93,102 @@ export function CinematicLanding() {
   }, [])
 
   /**
-   * Unthrottled RAF sync loop.
-   * With the all-intra I-frame encode, arbitrary seeking is instantaneous.
-   * Directly sets video.currentTime = targetTime on each animation frame.
+   * Safe seek dispatcher:
+   * Protects mobile hardware video decoders (e.g. Android MediaCodec on Chromium)
+   * from concurrent seek floods and seek-abort storms.
+   * If a seek is already in flight, skips intermediate frames and allows
+   * targetTimeRef to update to the latest scroll position without decoder pressure.
    */
-  const updateVideoFrame = useCallback(() => {
+  const requestSeek = useCallback(() => {
     const video = videoRef.current
-    if (video && isFinite(video.duration) && video.duration > 0) {
-      if (!video.paused) {
-        video.pause()
-      }
+    if (!video || !isFinite(video.duration) || video.duration <= 0) return
 
-      const target = targetTimeRef.current
-      if (Math.abs(target - video.currentTime) > 0.002) {
-        try {
-          video.currentTime = target
-        } catch (e) {
-          // ignore aborted seeks
-        }
-      }
+    const now = performance.now()
+
+    // Safety timeout: if seeking flag has been held for > 150ms without a seeked event,
+    // force clear it so the pipeline can never permanently stall.
+    if (isSeekingRef.current && (now - lastSeekTimeRef.current > 150)) {
+      isSeekingRef.current = false
     }
 
-    rafIdRef.current = requestAnimationFrame(updateVideoFrame)
+    // Never issue a new seek while the decoder is currently seeking.
+    // The decoder will process the latest target as soon as the current frame finishes.
+    if (isSeekingRef.current || video.seeking) {
+      return
+    }
+
+    const target = targetTimeRef.current
+    // Minimum seek delta: 0.015s (~half a frame at 30fps) to eliminate redundant seeks
+    if (Math.abs(target - video.currentTime) > 0.015) {
+      isSeekingRef.current = true
+      lastSeekTimeRef.current = now
+      try {
+        if (!video.paused) {
+          video.pause()
+        }
+        if (typeof video.fastSeek === 'function') {
+          video.fastSeek(target)
+        } else {
+          video.currentTime = target
+        }
+      } catch (e) {
+        isSeekingRef.current = false
+      }
+    }
   }, [])
+
+  /**
+   * Video 'seeked' event handler:
+   * The hardware decoder just completed a frame.
+   * If the scroll position moved while that seek was in progress,
+   * immediately seek to the latest target, cleanly skipping all obsolete intermediate frames.
+   */
+  const handleSeeked = useCallback(() => {
+    isSeekingRef.current = false
+
+    const video = videoRef.current
+    if (!video || !isFinite(video.duration) || video.duration <= 0) return
+
+    const target = targetTimeRef.current
+    if (Math.abs(target - video.currentTime) > 0.015) {
+      isSeekingRef.current = true
+      lastSeekTimeRef.current = performance.now()
+      try {
+        if (typeof video.fastSeek === 'function') {
+          video.fastSeek(target)
+        } else {
+          video.currentTime = target
+        }
+      } catch (e) {
+        isSeekingRef.current = false
+      }
+    }
+  }, [])
+
+  const handleSeeking = useCallback(() => {
+    isSeekingRef.current = true
+    lastSeekTimeRef.current = performance.now()
+  }, [])
+
+  const handleSeekError = useCallback(() => {
+    isSeekingRef.current = false
+  }, [])
+
+  /**
+   * RAF update loop:
+   * Checks requestSeek on each animation frame to guarantee smooth catch-up
+   * when momentum scrolling decelerates or settles.
+   */
+  const updateVideoFrame = useCallback(() => {
+    requestSeek()
+    rafIdRef.current = requestAnimationFrame(updateVideoFrame)
+  }, [requestSeek])
 
   const handleVideoReady = useCallback(({ duration, video }) => {
     if (video) video.pause()
     if (stRef.current) {
-      const initialTime = clamp(stRef.current.progress, 0, 1) * duration
+      const maxTime = Math.max(0, duration - 0.04)
+      const initialTime = clamp(stRef.current.progress, 0, 1) * maxTime
       targetTimeRef.current = initialTime
       try {
         video.currentTime = initialTime
@@ -175,7 +245,9 @@ export function CinematicLanding() {
           const video = videoRef.current
           const dur = video?.duration
           if (dur && isFinite(dur) && dur > 0) {
-            targetTimeRef.current = clamp(self.progress, 0, 1) * dur
+            const maxTime = Math.max(0, dur - 0.04)
+            targetTimeRef.current = clamp(self.progress, 0, 1) * maxTime
+            requestSeek()
           }
           applyUIProgress(self.progress, section)
         },
@@ -185,7 +257,8 @@ export function CinematicLanding() {
 
       const video = videoRef.current
       if (video && video.readyState >= 1 && isFinite(video.duration) && video.duration > 0) {
-        const initialTime = clamp(st.progress, 0, 1) * video.duration
+        const maxTime = Math.max(0, video.duration - 0.04)
+        const initialTime = clamp(st.progress, 0, 1) * maxTime
         targetTimeRef.current = initialTime
         try {
           video.currentTime = initialTime
@@ -206,7 +279,7 @@ export function CinematicLanding() {
       window.removeEventListener('resize', handleResize)
       ctx.revert()
     }
-  }, [applyUIProgress])
+  }, [applyUIProgress, requestSeek])
 
   return (
     <section className="landing" ref={sectionRef} id="hero">
@@ -217,6 +290,9 @@ export function CinematicLanding() {
           ref={videoRef}
           src={videoSrc}
           onReady={handleVideoReady}
+          onSeeked={handleSeeked}
+          onSeeking={handleSeeking}
+          onError={handleSeekError}
         />
       </div>
 
