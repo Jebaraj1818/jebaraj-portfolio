@@ -27,6 +27,16 @@ function isMobileViewport() {
  */
 const SCROLL_VH = 6.5
 
+/**
+ * Seek safety timeout in ms.
+ * Mobile hardware decoders (Android MediaCodec, iOS VideoToolbox) routinely need
+ * 200-500 ms for I-frame seeks.  The original 150 ms timeout was force-clearing
+ * the seeking flag while the decoder was still working, spawning competing seeks
+ * that caused the visible "freeze" on real devices.  400 ms is generous enough
+ * for all hardware while still recovering from genuinely stuck decoders.
+ */
+const SEEK_TIMEOUT_MS = 400
+
 /* Math helpers */
 function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi) }
 function rng(p, lo, hi) { return clamp((p - lo) / (hi - lo), 0, 1) }
@@ -105,9 +115,10 @@ export function CinematicLanding() {
 
     const now = performance.now()
 
-    // Safety timeout: if seeking flag has been held for > 150ms without a seeked event,
-    // force clear it so the pipeline can never permanently stall.
-    if (isSeekingRef.current && (now - lastSeekTimeRef.current > 150)) {
+    // Safety timeout: if seeking flag has been held for longer than the
+    // hardware-safe timeout without a seeked event, force clear it so the
+    // pipeline can never permanently stall.
+    if (isSeekingRef.current && (now - lastSeekTimeRef.current > SEEK_TIMEOUT_MS)) {
       isSeekingRef.current = false
     }
 
@@ -212,6 +223,92 @@ export function CinematicLanding() {
       }
     }
   }, [updateVideoFrame])
+
+  /**
+   * ── Browser lifecycle recovery ─────────────────────────────────────────
+   * When the browser tab becomes hidden, RAF stops firing entirely on most
+   * browsers. A seek may have been in-flight when that happened; its
+   * `seeked` event may or may not have fired.  When the user returns:
+   *
+   *   1. Force-clear the seeking lock (it is stale by definition).
+   *   2. Tell ScrollTrigger to re-read the real scroll position.
+   *   3. Recalculate the correct target time from the ScrollTrigger progress.
+   *   4. Issue an immediate seek so the video matches the scroll position.
+   *   5. Ensure the RAF loop is running (it may have been cancelled by the
+   *      browser or by a cleanup race).
+   *
+   * We listen to `visibilitychange` (tab show/hide, phone lock/unlock),
+   * `pageshow` (back-forward cache restore), and `focus` (window re-focus,
+   * some Android WebViews that don't fire visibilitychange reliably).
+   *
+   * IMPORTANT: `pageshow` and `focus` also fire on initial page load.
+   * We skip recovery during the first 2 seconds after mount to avoid
+   * interfering with the video's initial load/seek/render sequence.
+   */
+  useEffect(() => {
+    const mountTime = performance.now()
+
+    /** Shared recovery logic for all lifecycle events. */
+    function recoverSync() {
+      // Skip during initial page load — the video hasn't finished its
+      // first load/seek/render cycle yet, and calling ScrollTrigger.update()
+      // or requestSeek() too early can interfere with initial frame display.
+      if (performance.now() - mountTime < 2000) return
+
+      // 1. Clear any stale seeking lock
+      isSeekingRef.current = false
+
+      // 2. Let ScrollTrigger re-measure the real DOM scroll position
+      ScrollTrigger.update()
+
+      // 3. Recalculate video target from the authoritative scroll progress
+      const video = videoRef.current
+      const st = stRef.current
+      if (video && st && isFinite(video.duration) && video.duration > 0) {
+        const maxTime = Math.max(0, video.duration - 0.04)
+        targetTimeRef.current = clamp(st.progress, 0, 1) * maxTime
+
+        // Also re-apply UI progress so capability text matches scroll
+        const section = sectionRef.current
+        if (section) {
+          applyUIProgress(st.progress, section)
+        }
+      }
+
+      // 4. Issue an immediate seek (skips the RAF wait)
+      requestSeek()
+
+      // 5. Ensure the RAF loop is alive — it may have been killed by the
+      //    browser while backgrounded, or by a React strict-mode cleanup.
+      if (!rafIdRef.current) {
+        rafIdRef.current = requestAnimationFrame(updateVideoFrame)
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        recoverSync()
+      }
+    }
+
+    function handlePageShow() {
+      recoverSync()
+    }
+
+    function handleFocus() {
+      recoverSync()
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('pageshow', handlePageShow)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pageshow', handlePageShow)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [applyUIProgress, requestSeek, updateVideoFrame])
 
   // ScrollTrigger Setup
   useEffect(() => {

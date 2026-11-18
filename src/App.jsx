@@ -8,6 +8,7 @@ import { WorkWithMe } from './components/hire/WorkWithMe'
 import { Contact } from './components/contact/Contact'
 import { Footer } from './components/layout/Footer'
 import { FloatingActions } from './components/ui/FloatingActions'
+import { ErrorBoundary } from './components/ui/ErrorBoundary'
 
 export default function App() {
   return (
@@ -23,7 +24,9 @@ export default function App() {
         <About />
 
         {/* ── 02. Selected Work: Case Studies & Projects ────────── */}
-        <SelectedWork />
+        <ErrorBoundary>
+          <SelectedWork />
+        </ErrorBoundary>
 
         {/* ── 03. Capabilities & Services: What I Build ──────────── */}
         <Services />

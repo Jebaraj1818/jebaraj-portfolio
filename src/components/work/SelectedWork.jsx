@@ -153,28 +153,112 @@ const PROJECTS = [
   },
 ]
 
-// Motion switch animation: scale(1.02) opacity(0) -> scale(1) opacity(1) -> scale(0.96) opacity(0)
-const cardMotionVariants = {
-  enter: (direction) => ({
-    scale: 1.02,
-    opacity: 0,
-  }),
-  center: {
-    scale: 1,
-    opacity: 1,
-    transition: {
-      duration: 0.6,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-  exit: (direction) => ({
-    scale: 0.96,
-    opacity: 0,
-    transition: {
-      duration: 0.55,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  }),
+// Persistent image decode cache so already-decoded images are never re-decoded
+const imageDecodeCache = new Set()
+
+function preloadAndDecodeImage(src) {
+  if (!src || typeof window === 'undefined') return Promise.resolve(src)
+  if (imageDecodeCache.has(src)) return Promise.resolve(src)
+
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.src = src
+
+    const onDone = () => {
+      if ('decode' in img) {
+        img
+          .decode()
+          .then(() => {
+            imageDecodeCache.add(src)
+            resolve(src)
+          })
+          .catch(() => {
+            imageDecodeCache.add(src)
+            resolve(src)
+          })
+      } else {
+        imageDecodeCache.add(src)
+        resolve(src)
+      }
+    }
+
+    if (img.complete) {
+      onDone()
+    } else {
+      img.onload = onDone
+      img.onerror = () => resolve(src)
+    }
+  })
+}
+
+function ProjectCard({ project, onClick, isInteractive = true }) {
+  return (
+    <div
+      className="active-project"
+      onClick={isInteractive ? onClick : undefined}
+      role={isInteractive ? 'button' : undefined}
+      tabIndex={isInteractive ? 0 : -1}
+      aria-label={isInteractive ? `View details for ${project.title}` : undefined}
+    >
+      <div className="vertical-mirror-frame">
+        {/* Ambient Glow */}
+        <div
+          className="mirror-ambient-glow"
+          style={{
+            background: `radial-gradient(circle at 50% 25%, ${project.accent}24 0%, transparent 72%)`,
+          }}
+          aria-hidden="true"
+        />
+
+        {/* 1. Browser Chrome Header */}
+        <div className="mirror-chrome">
+          <div className="chrome-dots" aria-hidden="true">
+            <span className="c-dot red" />
+            <span className="c-dot yellow" />
+            <span className="c-dot green" />
+          </div>
+          <div className="chrome-url-bar">
+            <span className="chrome-lock">🔒</span>
+            <span className="chrome-url">https://{project.domain}</span>
+          </div>
+          <div className="chrome-status">
+            <span className="chrome-live-chip">LIVE</span>
+          </div>
+        </div>
+
+        {/* 2. Real Screenshot Canvas (object-fit: contain - never distorted) */}
+        <div className="mirror-screenshot-canvas">
+          <img
+            src={project.heroImage}
+            alt={`${project.title} production screenshot`}
+            className="mirror-screenshot-img"
+            draggable={false}
+            loading="eager"
+            decoding="async"
+          />
+          <div className="mirror-reflection" aria-hidden="true" />
+        </div>
+
+        {/* 3. Portrait Frame Footer Strip */}
+        <div className="mirror-footer-meta">
+          <div className="mirror-meta-left">
+            <span
+              className="mirror-pulse-dot"
+              style={{ backgroundColor: project.accent }}
+            />
+            <span className="mirror-visual-tag">{project.visualTag}</span>
+          </div>
+          <div className="mirror-tech-tags">
+            {project.keyTech.slice(0, 3).map((t) => (
+              <span key={t} className="mirror-tech-badge">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function SelectedWork() {
@@ -182,9 +266,13 @@ export function SelectedWork() {
   const introRef = useRef(null)
 
   const [activeIndex, setActiveIndex] = useState(0)
+  const [outgoingIndex, setOutgoingIndex] = useState(null)
   const [direction, setDirection] = useState(1)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const [modalProject, setModalProject] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const transitionTimeoutRef = useRef(null)
 
   // Pointer drag/swipe tracking
   const pointerStartX = useRef(0)
@@ -194,23 +282,80 @@ export function SelectedWork() {
 
   const total = PROJECTS.length
 
-  const goToProject = useCallback(
-    (index) => {
-      setDirection(index >= activeIndex ? 1 : -1)
-      setActiveIndex((index + total) % total)
+  // Preload and decode project images on mount so all switches are instantaneous
+  useEffect(() => {
+    // 1. Immediately decode initial active project image
+    preloadAndDecodeImage(PROJECTS[0].heroImage)
+
+    // 2. Preload and decode adjacent projects in background
+    const timer = setTimeout(() => {
+      PROJECTS.slice(1).forEach((p) => {
+        preloadAndDecodeImage(p.heroImage)
+      })
+    }, 60)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Robust navigation sequence:
+  // 1. Keep currently visible project rendered.
+  // 2. Ensure incoming project image is loaded and decoded.
+  // 3. Initiate smooth dual-layer crossfade (outgoing stays visible beneath).
+  // 4. Clean up outgoing project only after transition completes.
+  const navigateTo = useCallback(
+    async (targetIndex, dir) => {
+      const normalizedTarget = (targetIndex + total) % total
+      if (normalizedTarget === activeIndex) return
+
+      const moveDir = dir !== undefined ? dir : (normalizedTarget > activeIndex ? 1 : -1)
+      setDirection(moveDir)
+
+      // Ensure incoming image is ready before initiating transition
+      const targetProject = PROJECTS[normalizedTarget]
+      if (targetProject?.heroImage) {
+        await preloadAndDecodeImage(targetProject.heroImage)
+      }
+
+      // If a transition is already in flight, safely clear timer
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current)
+      }
+
+      setOutgoingIndex(activeIndex)
+      setActiveIndex(normalizedTarget)
+      setIsTransitioning(true)
+
+      transitionTimeoutRef.current = setTimeout(() => {
+        setOutgoingIndex(null)
+        setIsTransitioning(false)
+        transitionTimeoutRef.current = null
+      }, 380)
     },
     [activeIndex, total]
   )
 
   const nextProject = useCallback(() => {
-    setDirection(1)
-    setActiveIndex((prev) => (prev + 1) % total)
-  }, [total])
+    navigateTo((activeIndex + 1) % total, 1)
+  }, [activeIndex, navigateTo, total])
 
   const prevProject = useCallback(() => {
-    setDirection(-1)
-    setActiveIndex((prev) => (prev - 1 + total) % total)
-  }, [total])
+    navigateTo((activeIndex - 1 + total) % total, -1)
+  }, [activeIndex, navigateTo, total])
+
+  const goToProject = useCallback(
+    (index) => {
+      navigateTo(index, index >= activeIndex ? 1 : -1)
+    },
+    [activeIndex, navigateTo]
+  )
+
+  useEffect(() => {
+    return () => {
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const openDetails = useCallback((project) => {
     setModalProject(project)
@@ -365,6 +510,7 @@ export function SelectedWork() {
   }, [])
 
   const currentProject = PROJECTS[activeIndex]
+  const outgoingProject = outgoingIndex !== null ? PROJECTS[outgoingIndex] : null
   const prevProjectData = PROJECTS[(activeIndex - 1 + total) % total]
   const nextProjectData = PROJECTS[(activeIndex + 1) % total]
 
@@ -432,7 +578,13 @@ export function SelectedWork() {
                   <span className="n-dot" />
                 </div>
                 <div className="neighbor-img-wrap">
-                  <img src={prevProjectData.heroImage} alt="" draggable={false} />
+                  <img
+                    src={prevProjectData.heroImage}
+                    alt=""
+                    draggable={false}
+                    loading="eager"
+                    decoding="async"
+                  />
                 </div>
                 <div className="neighbor-caption">
                   <span className="n-arrow">←</span>
@@ -443,77 +595,27 @@ export function SelectedWork() {
 
             {/* Active Project Wrapper (Vertical 4:5 Portrait Mirror Frame) */}
             <div className="project-stage">
-              <AnimatePresence mode="wait" custom={direction}>
-                <motion.div
-                  key={currentProject.id}
-                  className="active-project"
-                  custom={direction}
-                  variants={cardMotionVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  onClick={() => openDetails(currentProject)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`View details for ${currentProject.title}`}
+              {/* Outgoing Card: Sits at zIndex: 1, 100% visible beneath incoming card to eliminate any black frames */}
+              {outgoingProject && (
+                <div
+                  className="project-card-layer layer-outgoing"
+                  key={`out-${outgoingProject.id}`}
                 >
-                  <div className="vertical-mirror-frame">
-                    {/* Ambient Glow */}
-                    <div
-                      className="mirror-ambient-glow"
-                      style={{
-                        background: `radial-gradient(circle at 50% 25%, ${currentProject.accent}24 0%, transparent 72%)`,
-                      }}
-                      aria-hidden="true"
-                    />
+                  <ProjectCard project={outgoingProject} isInteractive={false} />
+                </div>
+              )}
 
-                    {/* 1. Browser Chrome Header */}
-                    <div className="mirror-chrome">
-                      <div className="chrome-dots" aria-hidden="true">
-                        <span className="c-dot red" />
-                        <span className="c-dot yellow" />
-                        <span className="c-dot green" />
-                      </div>
-                      <div className="chrome-url-bar">
-                        <span className="chrome-lock">🔒</span>
-                        <span className="chrome-url">https://{currentProject.domain}</span>
-                      </div>
-                      <div className="chrome-status">
-                        <span className="chrome-live-chip">LIVE</span>
-                      </div>
-                    </div>
-
-                    {/* 2. Real Screenshot Canvas (object-fit: contain - never distorted) */}
-                    <div className="mirror-screenshot-canvas">
-                      <img
-                        src={currentProject.heroImage}
-                        alt={`${currentProject.title} production screenshot`}
-                        className="mirror-screenshot-img"
-                        draggable={false}
-                      />
-                      <div className="mirror-reflection" aria-hidden="true" />
-                    </div>
-
-                    {/* 3. Portrait Frame Footer Strip */}
-                    <div className="mirror-footer-meta">
-                      <div className="mirror-meta-left">
-                        <span
-                          className="mirror-pulse-dot"
-                          style={{ backgroundColor: currentProject.accent }}
-                        />
-                        <span className="mirror-visual-tag">{currentProject.visualTag}</span>
-                      </div>
-                      <div className="mirror-tech-tags">
-                        {currentProject.keyTech.slice(0, 3).map((t) => (
-                          <span key={t} className="mirror-tech-badge">
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+              {/* Active / Incoming Card: Fades in on top at zIndex: 2 */}
+              <div
+                className={`project-card-layer ${isTransitioning ? 'layer-incoming' : 'layer-active'}`}
+                key={`in-${currentProject.id}`}
+              >
+                <ProjectCard
+                  project={currentProject}
+                  onClick={() => openDetails(currentProject)}
+                  isInteractive={true}
+                />
+              </div>
             </div>
 
             {/* Next Neighbor (Absolute Right, Decorative & Clickable) */}
@@ -531,7 +633,13 @@ export function SelectedWork() {
                   <span className="n-dot" />
                 </div>
                 <div className="neighbor-img-wrap">
-                  <img src={nextProjectData.heroImage} alt="" draggable={false} />
+                  <img
+                    src={nextProjectData.heroImage}
+                    alt=""
+                    draggable={false}
+                    loading="eager"
+                    decoding="async"
+                  />
                 </div>
                 <div className="neighbor-caption">
                   <span className="n-title">{nextProjectData.title}</span>
@@ -547,14 +655,14 @@ export function SelectedWork() {
              Centered without giant empty gaps.
              ═══════════════════════════════════════════════════════ */}
           <div className="gallery-project-details">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="popLayout" custom={direction}>
               <motion.div
                 key={currentProject.id}
                 className="details-content-wrap"
-                initial={{ opacity: 0, y: 14 }}
+                initial={{ opacity: 0, y: direction > 0 ? 8 : -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                exit={{ opacity: 0, y: direction > 0 ? -8 : 8 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
               >
                 {/* 1. Project Title */}
                 <h3 className="details-title">{currentProject.title}</h3>

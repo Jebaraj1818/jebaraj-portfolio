@@ -1594,6 +1594,57 @@ body.mobile-nav-active .floating-actions {
   z-index: 10;
 }
 
+/* ── Dual-Layer Continuous Transition (Zero Black Frames) ── */
+.project-card-layer {
+  width: 100%;
+  height: 100%;
+  will-change: transform, opacity;
+}
+
+.project-card-layer.layer-outgoing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  animation: projectCardExit 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.project-card-layer.layer-incoming {
+  position: relative;
+  z-index: 2;
+  animation: projectCardEnter 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.project-card-layer.layer-active {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes projectCardEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.985) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes projectCardExit {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.985) translateY(-4px);
+  }
+}
+
 .active-project {
   width: 100%;
   height: 100%;
@@ -1813,6 +1864,7 @@ body.mobile-nav-active .floating-actions {
   align-items: center;
   text-align: center;
   gap: 12px;
+  width: 100%;
 }
 
 /* 1. Counter Row */
@@ -3307,6 +3359,22 @@ body.mobile-nav-active .floating-actions {
 .freelance-desc {
   max-width: 620px;
   margin: 0 auto 24px;
+}
+
+.moment-vision-sublead {
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.moment-vision-meta {
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.moment-vision-meta .meta-tag {
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.2em;
 }
 
 .moment-action-row {
@@ -5321,21 +5389,27 @@ body.mobile-nav-active .floating-actions {
   .about-scroll-track {
     min-height: 280vh;
   }
-  /* Safe top spacing: navbar is ~64px; add breathing room */
+  /* Safe top spacing: navbar is ~64px; add breathing room and safe area */
   .about-sticky-stage {
-    height: auto;
-    min-height: auto;
-    padding: clamp(60px, 9vh, 76px) 16px 16px;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100vh;
+    padding: clamp(56px, 8.5vh, 72px) 16px max(16px, env(safe-area-inset-bottom, 16px));
     perspective: 850px;
     justify-content: flex-start;
     align-items: center;
     overflow: hidden;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
   }
   .about-editorial-header {
     margin-bottom: 12px;
     width: 100%;
     max-width: 340px;
+    flex-shrink: 0;
   }
   .about-header-label {
     display: none !important;
@@ -5352,21 +5426,44 @@ body.mobile-nav-active .floating-actions {
     width: 86vw;
     max-width: 340px;
     min-width: 0;
-    height: clamp(380px, 60vh, 500px);
+    height: clamp(390px, 62dvh, 510px);
+    max-height: calc(100dvh - 120px);
     margin-inline: auto;
     border-radius: 16px;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    transform-style: flat;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   .poster-editorial-rail {
     padding: 9px 14px;
     font-size: 8px;
     letter-spacing: 0.12em;
+    background: rgba(11, 15, 24, 0.95);
+    flex-shrink: 0;
   }
   .poster-editorial-rail .rail-edition {
     display: none;
   }
+  .poster-story-stage {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 3%, black 97%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 3%, black 97%, transparent 100%);
+  }
+  /* Shared story moment sizing (Slides 1–3 restored to original visual proportions) */
   .story-moment {
     padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   .moment-kicker {
     font-size: 9px;
@@ -5403,30 +5500,71 @@ body.mobile-nav-active .floating-actions {
   .moment-headline-massive {
     font-size: clamp(22px, 7vw, 34px);
   }
-  .freelance-live-badge {
-    padding: 4px 12px;
-    font-size: 8.5px;
-    margin-bottom: 12px;
+
+  /* ── Slide 4 Isolated Locked Styling (Building Toward Something Bigger) ── */
+  .story-moment.moment-freelance {
+    padding: 12px 14px 14px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
-  .moment-freelance-title {
-    font-size: clamp(18px, 5.2vw, 24px);
-    line-height: 1.25;
-    margin-bottom: 10px;
+  .story-moment.moment-freelance::-webkit-scrollbar {
+    display: none;
   }
-  .freelance-desc {
-    font-size: 13px;
-    margin-bottom: 16px;
+  .moment-freelance .freelance-live-badge {
+    padding: 3px 10px;
+    font-size: 8px;
+    margin-bottom: 6px;
   }
-  .moment-action-row {
-    gap: 8px;
+  .moment-freelance .moment-freelance-title {
+    font-size: clamp(16px, 4.5vw, 20px);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .moment-freelance .freelance-desc {
+    font-size: 12px;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .moment-freelance .moment-vision-sublead {
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 6px !important;
+  }
+  .moment-freelance .moment-vision-meta {
+    margin-bottom: 8px !important;
+    justify-content: center !important;
+  }
+  .moment-freelance .moment-vision-meta .meta-tag {
+    font-size: 8px !important;
+    letter-spacing: 0.12em !important;
+    color: var(--text) !important;
+    font-weight: 700 !important;
+  }
+  .moment-freelance .moment-action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
     width: 100%;
-    max-width: 280px;
+    max-width: 310px;
+    margin: 4px auto 0;
   }
-  .editorial-action-pill {
-    padding: 8px 16px;
-    font-size: 10px;
+  .moment-freelance .editorial-action-pill {
+    padding: 8px 10px;
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
     justify-content: center;
     width: 100%;
+    box-sizing: border-box;
+    white-space: nowrap;
+    border-radius: 999px;
+  }
+  .moment-freelance .editorial-action-pill.pill-primary {
+    grid-column: 1 / -1;
+    padding: 9px 14px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
   }
 
   /* Technology & Stack Orbital System Mobile */

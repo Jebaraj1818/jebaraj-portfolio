@@ -291,44 +291,37 @@ export function About() {
           // ─────────────────────────────────────────────────────────
           // MOBILE: 4 DISCRETE STORY MOMENTS ACROSS FULL SCROLL RANGE
           // ─────────────────────────────────────────────────────────
-          const startRotateX = 12
-          const startScale = 1.02
-          const targetTranslateY = -15
-          const perspectiveVal = 800
+          const targetTranslateY = -10
 
           // Strict initial states: Only Moment 1 is visible in center; all others placed below masked viewport
           gsap.set(m1, { autoAlpha: 1, yPercent: 0, y: 0 })
-          gsap.set([m2, m3, m4], { autoAlpha: 0, yPercent: 100, y: 0 })
+          gsap.set([m2, m3, m4], { autoAlpha: 0, yPercent: 80, y: 0 })
 
           const masterTl = gsap.timeline({
             scrollTrigger: {
               trigger: track,
               start: 'top top',
               end: 'bottom bottom',
-              scrub: true,
+              scrub: 0.5,
               snap: {
                 snapTo: [0, 0.333, 0.667, 1],
-                directional: false,
-                duration: { min: 0.2, max: 0.45 },
-                delay: 0.05,
-                ease: 'power2.out',
+                directional: true,
+                duration: { min: 0.25, max: 0.5 },
+                delay: 0.12,
+                ease: 'power1.out',
               },
               invalidateOnRefresh: true,
             },
           })
 
-          // A. 3D Container Transform (Spans 0 to 100 continuously)
+          // A. 2D Container Transform (Avoids expensive continuous 3D re-rasterization on mobile GPUs)
           masterTl.fromTo(
             poster,
             {
-              rotateX: startRotateX,
-              scale: startScale,
+              scale: 1.02,
               y: 0,
-              transformPerspective: perspectiveVal,
-              transformOrigin: 'center top',
             },
             {
-              rotateX: 0,
               scale: 1,
               y: targetTranslateY,
               ease: 'none',
@@ -341,8 +334,8 @@ export function About() {
           masterTl.to(
             header,
             {
-              y: -18,
-              scale: 0.95,
+              y: -16,
+              scale: 0.96,
               opacity: 0,
               ease: 'power1.out',
               duration: 12,
@@ -350,84 +343,78 @@ export function About() {
             2
           )
 
-          // C. Calibrated Discrete Story Moments (4 discrete slides centered at snap points: 0, 0.333, 0.667, 1)
+          // C. Calibrated Discrete Story Moments (Symmetrical holding plateaus centered at snap points: 0, 0.333, 0.667, 1)
 
-          // ── TRANSITION 1 -> 2 (Hold Slide 1: 0..12 | Transition: 12..24 | Settle Slide 2: 24..45)
+          // ── TRANSITION 1 -> 2 (Hold Slide 1: 0..10 | Transition: 10..24 | Settle Slide 2: 24..43)
           masterTl
             .to(
               m1,
               {
-                yPercent: -100,
+                yPercent: -80,
                 autoAlpha: 0,
-                ease: 'power2.inOut',
-                duration: 12,
+                ease: 'power1.inOut',
+                duration: 14,
               },
-              12
+              10
             )
-            .fromTo(
+            .to(
               m2,
-              { autoAlpha: 0, yPercent: 100, y: 0 },
               {
                 autoAlpha: 1,
                 yPercent: 0,
                 y: 0,
-                ease: 'power2.inOut',
-                duration: 12,
-                immediateRender: false,
+                ease: 'power1.inOut',
+                duration: 14,
               },
-              12
+              10
             )
 
-          // ── TRANSITION 2 -> 3 (Hold Slide 2: 24..45 | Transition: 45..57 | Settle Slide 3: 57..78)
+          // ── TRANSITION 2 -> 3 (Hold Slide 2: 24..43 | Transition: 43..57 | Settle Slide 3: 57..76)
           masterTl
             .to(
               m2,
               {
-                yPercent: -100,
+                yPercent: -80,
                 autoAlpha: 0,
-                ease: 'power2.inOut',
-                duration: 12,
+                ease: 'power1.inOut',
+                duration: 14,
               },
-              45
+              43
             )
-            .fromTo(
+            .to(
               m3,
-              { autoAlpha: 0, yPercent: 100, y: 0 },
               {
                 autoAlpha: 1,
                 yPercent: 0,
                 y: 0,
-                ease: 'power2.inOut',
-                duration: 12,
-                immediateRender: false,
+                ease: 'power1.inOut',
+                duration: 14,
               },
-              45
+              43
             )
 
-          // ── TRANSITION 3 -> 4 (Hold Slide 3: 57..78 | Transition: 78..90 | Settle Slide 4: 90..100)
+          // ── TRANSITION 3 -> 4 (Hold Slide 3: 57..76 | Transition: 76..90 | Settle Slide 4: 90..100)
           masterTl
             .to(
               m3,
               {
-                yPercent: -100,
+                yPercent: -80,
                 autoAlpha: 0,
-                ease: 'power2.inOut',
-                duration: 12,
+                ease: 'power1.inOut',
+                duration: 14,
               },
-              78
+              76
             )
-            .fromTo(
+            .to(
               m4,
-              { autoAlpha: 0, yPercent: 100, y: 0 },
               {
                 autoAlpha: 1,
                 yPercent: 0,
                 y: 0,
-                ease: 'power2.inOut',
-                duration: 12,
-                immediateRender: false,
+                ease: 'power1.inOut',
+                duration: 14,
               },
-              78
+              76
             )
         }
       }
@@ -555,12 +542,12 @@ export function About() {
                     My goal is to become a developer who understands both the business problem and the technology behind the solution.
                   </p>
 
-                  <p className="moment-sub-lead" style={{ marginBottom: '16px', fontSize: '14px' }}>
+                  <p className="moment-sub-lead moment-vision-sublead">
                     Building scalable applications, exploring AI, and creating products that solve meaningful problems.
                   </p>
 
-                  <div className="moment-meta-row" style={{ justifyContent: 'center', marginBottom: '22px' }}>
-                    <span className="meta-tag" style={{ color: 'var(--text)', fontWeight: '700', letterSpacing: '0.2em' }}>
+                  <div className="moment-meta-row moment-vision-meta">
+                    <span className="meta-tag">
                       BUSINESS <span style={{ color: 'var(--crimson)' }}>×</span> TECHNOLOGY <span style={{ color: 'var(--crimson)' }}>×</span> AI
                     </span>
                   </div>
