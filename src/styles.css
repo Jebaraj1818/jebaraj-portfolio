@@ -5421,10 +5421,18 @@ body.mobile-nav-active .floating-actions {
     font-size: 9px;
     letter-spacing: 0.09em;
   }
-  /* Mobile portrait frame: 86vw, capped at 340px, centered horizontally */
+  /* Mobile portrait frame: responsive slanted futuristic panel */
+  .about-3d-stage {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-style: preserve-3d;
+    z-index: 4;
+  }
   .about-poster-object {
-    width: 86vw;
-    max-width: 340px;
+    width: 78vw;
+    max-width: 305px;
     min-width: 0;
     height: clamp(390px, 62dvh, 510px);
     max-height: calc(100dvh - 120px);
@@ -5433,7 +5441,7 @@ body.mobile-nav-active .floating-actions {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    transform-style: flat;
+    transform-style: preserve-3d;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }

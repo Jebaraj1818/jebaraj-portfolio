@@ -291,6 +291,8 @@ export function About() {
           // ─────────────────────────────────────────────────────────
           // MOBILE: 4 DISCRETE STORY MOMENTS ACROSS FULL SCROLL RANGE
           // ─────────────────────────────────────────────────────────
+          const mobileRotateX = 13.5
+          const perspectiveVal = 950
           const targetTranslateY = -10
 
           // Strict initial states: Only Moment 1 is visible in center; all others placed below masked viewport
@@ -314,20 +316,40 @@ export function About() {
             },
           })
 
-          // A. 2D Container Transform (Avoids expensive continuous 3D re-rasterization on mobile GPUs)
+          // A. Strong Slanted Panel (Slides 1, 2, 3) -> Smoothly transforms to Completely Flat (Slide 4)
+          // 1. Holds strong desktop-matched slant (13.5deg) locked across Slides 1, 2, and 3 (0..76)
           masterTl.fromTo(
             poster,
             {
+              rotateX: mobileRotateX,
               scale: 1.02,
               y: 0,
+              transformPerspective: perspectiveVal,
+              transformOrigin: 'center 18%',
             },
             {
-              scale: 1,
-              y: targetTranslateY,
+              rotateX: mobileRotateX,
+              scale: 1.005,
+              y: targetTranslateY * 0.76,
               ease: 'none',
-              duration: 100,
+              duration: 76,
             },
             0
+          )
+
+          // 2. Smoothly flattens from mobileRotateX (13.5deg) to completely flat (0deg)
+          //    during Slide 3 -> 4 transition (76..90)
+          //    Holds completely flat at 0deg on Slide 4 (90..100)
+          masterTl.to(
+            poster,
+            {
+              rotateX: 0,
+              scale: 1,
+              y: targetTranslateY,
+              ease: 'power1.inOut',
+              duration: 14,
+            },
+            76
           )
 
           // B. Title Header Gentle Recede & Fade (2 to 14)
