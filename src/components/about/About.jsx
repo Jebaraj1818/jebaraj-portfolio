@@ -291,7 +291,7 @@ export function About() {
           // ─────────────────────────────────────────────────────────
           // MOBILE: 4 DISCRETE STORY MOMENTS ACROSS FULL SCROLL RANGE
           // ─────────────────────────────────────────────────────────
-          const mobileRotateX = 13.5
+          const mobileRotateX = 15
           const perspectiveVal = 950
           const targetTranslateY = -10
 
@@ -316,8 +316,11 @@ export function About() {
             },
           })
 
-          // A. Strong Slanted Panel (Slides 1, 2, 3) -> Smoothly transforms to Completely Flat (Slide 4)
-          // 1. Holds strong desktop-matched slant (13.5deg) locked across Slides 1, 2, and 3 (0..76)
+          // A. Continuous 3D Slant Progression (Matching PC version)
+          // Slide 1: Strong trapezoid slant (15deg)
+          // Slide 2: Progressively flatter (~9.7deg)
+          // Slide 3: Progressively flatter (~4.5deg)
+          // Slide 4: Completely flat rectangular panel (0deg)
           masterTl.fromTo(
             poster,
             {
@@ -328,28 +331,13 @@ export function About() {
               transformOrigin: 'center 18%',
             },
             {
-              rotateX: mobileRotateX,
-              scale: 1.005,
-              y: targetTranslateY * 0.76,
-              ease: 'none',
-              duration: 76,
-            },
-            0
-          )
-
-          // 2. Smoothly flattens from mobileRotateX (13.5deg) to completely flat (0deg)
-          //    during Slide 3 -> 4 transition (76..90)
-          //    Holds completely flat at 0deg on Slide 4 (90..100)
-          masterTl.to(
-            poster,
-            {
               rotateX: 0,
               scale: 1,
               y: targetTranslateY,
-              ease: 'power1.inOut',
-              duration: 14,
+              ease: 'none',
+              duration: 95,
             },
-            76
+            0
           )
 
           // B. Title Header Gentle Recede & Fade (2 to 14)

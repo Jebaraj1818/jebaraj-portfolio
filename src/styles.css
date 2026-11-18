@@ -5432,7 +5432,7 @@ body.mobile-nav-active .floating-actions {
   }
   .about-poster-object {
     width: 78vw;
-    max-width: 305px;
+    max-width: 300px;
     min-width: 0;
     height: clamp(390px, 62dvh, 510px);
     max-height: calc(100dvh - 120px);
